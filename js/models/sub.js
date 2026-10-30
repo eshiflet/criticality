@@ -144,12 +144,12 @@ export class SubModel {
     a.clear();
     if (this.frac > 1.0) a.add('pwrHi');
     if (this.Thot > this.spec.Tref + 35) a.add('thotHi');
-    if (this.sur > 1.5 && this.frac < 0.1) a.add('surHi');
+    if (this.sur > 1 && this.frac < 0.05) a.add('surHi');
     if (!this.ctl.pumpsFast && this.frac > 0.55) a.add('flowLow');
     if (this.battery < 25) a.add('battLow');
     if (this.steamPsig < 300) a.add('steamLow');
     if (this.frac > 1.15) this.scram('High power');
-    else if (this.sur > 4 && this.frac < 0.1) this.scram('High startup rate'); // source and intermediate range only
+    else if (this.sur > 4 && this.frac < 0.02) this.scram('High startup rate'); // startup range only
     else if (this.Thot > this.spec.Tref + 55) this.scram('High coolant temperature');
     else if (this.frac > 0.6 && this.flow < 0.55) this.scram('Low coolant flow');
   }
