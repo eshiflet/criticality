@@ -1,4 +1,4 @@
-import { RBMKModel } from '../js/models/rbmk.js';
+import { RBMKModel } from '../../js/models/rbmk.js';
 const path = process.argv[2] || 'hist';
 const m = new RBMKModel();
 const clock = () => { const t = 23 * 3600 + 10 * 60 + m.t; const hh = Math.floor(t / 3600) % 24, mm = Math.floor(t / 60) % 60, ss = Math.floor(t % 60); return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; };

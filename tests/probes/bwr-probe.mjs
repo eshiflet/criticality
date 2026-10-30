@@ -1,4 +1,4 @@
-import { BWRModel } from '../js/models/bwr.js';
+import { BWRModel } from '../../js/models/bwr.js';
 const m = new BWRModel();
 const show = (l) => console.log(l.padEnd(14), 't', m.t.toFixed(0).padStart(5), 'P%', (m.frac*100).toFixed(1).padStart(6), 'core', (m.q.core*100).toFixed(1), 'psig', m.P.toFixed(0), 'lvl', m.level.toFixed(1), 'Lc', m.Lc.toFixed(0), 'flow', (m.flowFrac*100).toFixed(0), 'void', m.alpha.toFixed(2), 'srv', m.q.srvOpen, 'pool', m.pool.toFixed(0), 'clad', m.Tclad.toFixed(0), 'dmg', m.damage.toFixed(3), m.why ?? '', [...m.alarms].join(' '));
 for (let i = 0; i < 120; i++) m.step(1); show('steady');

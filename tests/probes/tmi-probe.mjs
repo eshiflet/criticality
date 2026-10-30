@@ -1,4 +1,4 @@
-import { TMIModel } from '../js/models/tmi.js';
+import { TMIModel } from '../../js/models/tmi.js';
 const hist = process.argv[2] !== 'save';
 const m = new TMIModel();
 const show = (l) => console.log(l.padEnd(12), 'min', (m.t/60).toFixed(1).padStart(6), 'P', m.P.toFixed(0).padStart(5), 'pzr', m.pzrLevel.toFixed(0).padStart(4), 'T', m.T.toFixed(0), 'Thot', m.Thot.toFixed(0), 'sub', m.subcooling.toFixed(0), 'M%', (100*m.M/m.Mnom).toFixed(0), 'void', m.voidLoop.toFixed(2), 'sg', m.sgLevel.map(x=>x.toFixed(0)).join('/'), 'hpi', (m.q.wHpi*1000).toFixed(0), 'porv', (m.q.wPorv*1000).toFixed(0), 'rcdt', m.rcdtP.toFixed(0), 'tail', m.tailpipe.toFixed(0), 'clad', m.Tclad.toFixed(0), 'dmg', (m.damage*100).toFixed(1), m.why ?? '');

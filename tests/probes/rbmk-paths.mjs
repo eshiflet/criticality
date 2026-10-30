@@ -1,4 +1,4 @@
-import { RBMKModel } from '../js/models/rbmk.js';
+import { RBMKModel } from '../../js/models/rbmk.js';
 const op = (m) => { m.ctl.rrCmd = (m.MW < m.ctl.setMW * 0.97 && m.sur < 0.2) ? 1 : (m.MW > m.ctl.setMW * 1.03 && m.sur > -0.2) ? -1 : 0; };
 const run = (m, sec, f) => { for (let i = 0; i < sec * 5 && !m.destroyed; i++) { f?.(m); m.step(0.2); } };
 const toCollapse = () => { const m = new RBMKModel(); for (let k = 0; k < 11; k++) { m.ctl.setMW = 1600 - (900 * (k + 1)) / 11; run(m, 300, op); } run(m, 23 * 60, op); m.ctl.autoMode = 'AR'; m.ctl.setMW = 30; run(m, 300, op); return m; };

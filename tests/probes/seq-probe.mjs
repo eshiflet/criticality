@@ -1,4 +1,4 @@
-import { SequoyahModel } from '../js/models/sequoyah.js';
+import { SequoyahModel } from '../../js/models/sequoyah.js';
 const m = new SequoyahModel({ boron: 1180 });
 const P = m.plant;
 console.log('start rho', (m.rho()*1e5).toFixed(0), 'pcm  SR', P.srCps?.toFixed?.(1), 'frac', m.frac.toExponential(2));

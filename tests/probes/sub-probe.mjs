@@ -1,4 +1,4 @@
-import { SubModel } from '../js/models/sub.js';
+import { SubModel } from '../../js/models/sub.js';
 const m = new SubModel({ power: 0.15 });
 const show = (l) => console.log(l.padEnd(16), 't', m.t.toFixed(0), 'P', (m.frac*100).toFixed(1), 'Tavg', m.Tavg.toFixed(1), 'Thot', m.Thot.toFixed(1), 'Ps', m.steamPsig.toFixed(0), 'rod', m.rodIn.toFixed(1), 'kts', m.speed.toFixed(1), 'batt', m.battery.toFixed(0), 'scram', m.why, [...m.alarms].join());
 m.ctl.ahead = 0.11; for (let i = 0; i < 300; i++) m.step(1); show('steady 1/3');
