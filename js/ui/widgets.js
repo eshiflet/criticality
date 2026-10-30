@@ -130,15 +130,15 @@ export function annunciators(defs, { cols = 6, onHorn } = {}) {
 /** Rotary selector switch with labelled positions. */
 export function selector({ label, positions, value, onChange, style = 'pistol' }) {
   let i = Math.max(0, positions.findIndex((p) => p[0] === value));
-  const n = positions.length, span = n > 2 ? 90 : 60;
+  const n = positions.length, span = n > 3 ? 140 : n > 2 ? 90 : 60, W = n > 3 ? 120 : 80, cx = W / 2, R = n > 3 ? 44 : 30;
   const ang = (k) => -span / 2 + (span * k) / Math.max(1, n - 1);
-  const labels = positions.map(([, t], k) => { const a = (ang(k) * Math.PI) / 180; return `<text x="${40 + 30 * Math.sin(a)}" y="${36 - 26 * Math.cos(a)}" class="s-pos" text-anchor="middle">${t}</text>`; }).join('');
+  const labels = positions.map(([, t], k) => { const a = (ang(k) * Math.PI) / 180; return `<text x="${cx + R * Math.sin(a)}" y="${(n > 3 ? 48 : 36) - (n > 3 ? 36 : 26) * Math.cos(a)}" class="s-pos" text-anchor="middle">${t}</text>`; }).join('');
   const handle = style === 'pistol'
-    ? '<path d="M40 44 L36 22 Q40 16 44 22 Z" class="s-grip"/><circle cx="40" cy="44" r="9" class="s-body"/>'
-    : '<rect x="36" y="22" width="8" height="30" rx="3" class="s-grip"/><circle cx="40" cy="44" r="8" class="s-body"/>';
-  const el = svg(`<svg viewBox="0 0 80 60" width="80" height="60" tabindex="0" role="slider" aria-label="${label}">${labels}<g class="s-h">${handle}</g></svg><div class="w-label">${label}</div>`, 'w selector');
+    ? `<path d="M${cx} 44 L${cx - 4} 22 Q${cx} 16 ${cx + 4} 22 Z" class="s-grip"/><circle cx="${cx}" cy="44" r="9" class="s-body"/>`
+    : `<rect x="${cx - 4}" y="22" width="8" height="30" rx="3" class="s-grip"/><circle cx="${cx}" cy="44" r="8" class="s-body"/>`;
+  const el = svg(`<svg viewBox="0 0 ${W} 60" width="${W}" height="60" tabindex="0" role="slider" aria-label="${label}">${labels}<g class="s-h">${handle}</g></svg><div class="w-label">${label}</div>`, 'w selector');
   const g = el.querySelector('.s-h');
-  const paint = () => g.setAttribute('transform', `rotate(${ang(i)} 40 44)`);
+  const paint = () => g.setAttribute('transform', `rotate(${ang(i)} ${cx} 44)`);
   const go = (k) => { k = clamp(k, 0, n - 1); if (k === i) return; i = k; paint(); onChange?.(positions[i][0]); };
   el.querySelector('svg').addEventListener('click', (e) => { const r = e.currentTarget.getBoundingClientRect(); go(e.clientX - r.left < r.width / 2 ? i - 1 : i + 1); });
   el.querySelector('svg').addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(i - 1); if (e.key === 'ArrowRight') go(i + 1); });

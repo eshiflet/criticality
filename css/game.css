@@ -219,3 +219,12 @@ a { color: var(--accent); }
 .eot-ptr { position: absolute; left: 113px; top: 30px; width: 4px; height: 85px; background: #b81d1d; border-radius: 2px; transform-origin: 2px 85px; transition: transform 0.6s; }
 .eot-ptr.ans { background: #1e6bd6; width: 6px; left: 112px; opacity: 0.85; transform-origin: 3px 85px; }
 .eot-hub { position: absolute; left: 103px; top: 103px; width: 24px; height: 24px; border-radius: 50%; background: #2b2b2b; border: 2px solid #b8a06a; }
+
+/* Browns Ferry */
+.srv-row { display: flex; flex-wrap: wrap; gap: 6px 10px; }
+.coremap { border: 3px solid #222; border-radius: 50%; background: #1b1f1c; }
+.w.dead { position: relative; filter: grayscale(1) brightness(0.55); pointer-events: none; }
+.w.dead::after { content: 'NO POWER'; position: absolute; inset: 0; display: grid; place-items: center; font: 700 9px 'IBM Plex Sans'; color: #ffd2c4; background: repeating-linear-gradient(135deg, rgba(40, 10, 5, 0.55) 0 6px, rgba(80, 20, 10, 0.55) 6px 12px); border-radius: 4px; letter-spacing: 0.08em; }
+.smoke { position: relative; }
+.smoke::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 30% 100%, rgba(60, 60, 60, 0.35), transparent 60%); border-radius: 12px; animation: drift 12s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translateX(8%); opacity: 0.7; } }
