@@ -39,7 +39,7 @@ export class CP1Model {
       control: 0, // ft withdrawn (target, set by Weil's hand)
       safetyUp: false, // motor raising the safety rod
       zipOut: false, // ZIP pulled out and tied
-      tripW: 1.0, // automatic safety rod trip setting, watts
+      tripW: 0.05, // automatic safety rod trip setting, watts (set too low, as it was that morning)
       cadmium: false, // the bucket brigade
       range: 0, // recorder range: full scale = 10^range × 0.01 W
     };
@@ -69,6 +69,12 @@ export class CP1Model {
       - S.cadmiumWorth * this.cad;
   }
   get kEff() { return 1 / (1 - this.rho()); }
+  /** Where the control rod makes the pile exactly critical, with the other rods where they are (ft). */
+  get criticalFt() {
+    const S = this.spec, r = this.rod;
+    const others = S.rhoExcess - S.safetyWorth * (1 - shape(r.safety)) - S.zipWorth * (1 - shape(r.zip)) - S.cadmiumWorth * this.cad;
+    return S.rodLength * (1 - others / S.controlWorth);
+  }
   get P() { return this.k.n; } // watts
   get period() { return this.k.period(); }
   get controlFt() { return this.rod.control * this.spec.rodLength; }
