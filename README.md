@@ -78,3 +78,16 @@ with invented lines (CP-1's two quotations from Fermi are the famous recorded on
 - 2026-10-30 (overnight): project created; six plant models with headless checks; widget
   library, audio, mission runner, title/campaign/briefing/debrief screens; all six missions
   playable end to end; tested in the browser at desktop width.
+- Polish pass: keyboard shortcuts (space, 1–6, H), in-mission help, phone layout (no horizontal
+  scroll at 375 px in any control room), rank promotions, Chernobyl branch for players who keep
+  the reactor inside the test programme.
+
+### Ideas for next
+
+- Rod-by-rod control where the real boards had it (the BWR rod select matrix, RBMK rod groups,
+  Sequoyah bank selection) instead of grouped rods.
+- A post-mission replay chart (power, pressure, level against time) in the debrief.
+- More sandbox scenarios per plant (e.g. a Sequoyah steam-generator tube rupture, a BWR ATWS).
+- Volume control and a "no horn" option.
+- Publish: create the GitHub repo (eshiflet) when ready.
+

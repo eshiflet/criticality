@@ -116,4 +116,4 @@ Each control room has its own look (palette, fonts, materials) via CSS variables
 
 ## Progress log
 
-(kept at the bottom of README.md once the build is under way)
+Kept at the bottom of README.md.
