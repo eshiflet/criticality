@@ -86,11 +86,14 @@ function debrief(m, r) {
   const g = r.grade ?? grade(r.score ?? 0);
   const prev = state.done[m.id];
   const order = ['F', 'D', 'C', 'B', 'A', 'S'];
+  const rankBefore = rank();
   if (!prev || order.indexOf(g) > order.indexOf(prev.grade)) { state.done[m.id] = { grade: g, score: r.score }; save(state); }
+  const promoted = rank() !== rankBefore ? rank() : null;
   app.replaceChildren(h('div', { class: 'brief debrief', style: { '--accent': m.accent } },
     h('div', { class: 'brief-head' }, h('div', { class: 'card-date' }, 'Debrief'), h('h1', {}, r.headline ?? (r.failed ? 'Mission failed' : 'Mission complete')), h('div', { class: 'card-place' }, m.title)),
     h('div', { class: 'debrief-grade' }, h('span', { class: `grade big g-${g}` }, g), h('div', {}, h('div', { class: 'muted' }, 'Score'), h('b', {}, `${Math.round(r.score ?? 0)} / 100`))),
     r.failed ? h('p', { class: 'fail', html: r.failed }) : null,
+    promoted ? h('p', { class: 'promo' }, `Promoted: ${promoted}`) : null,
     h('ul', { class: 'notes' }, (r.notes ?? []).map((n) => h('li', { html: n }))),
     h('h3', {}, 'What really happened'),
     h('div', { class: 'epilogue', html: m.epilogue }),

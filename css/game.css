@@ -247,3 +247,5 @@ a { color: var(--accent); }
 /* Sequoyah */
 .bank-grid { display: grid; grid-template-columns: repeat(4, auto); gap: 6px 10px; }
 .firstout { font: 700 12px 'IBM Plex Mono'; color: #b81d1d; letter-spacing: 0.05em; margin-top: 4px; min-height: 16px; }
+
+.promo { font: 700 20px 'Oswald', sans-serif; letter-spacing: 0.08em; color: var(--accent); text-transform: uppercase; }
