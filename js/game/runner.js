@@ -52,7 +52,16 @@ export class Runner {
       h('div', { class: 'hud-title' }, h('b', {}, m.title), h('span', { class: 'muted' }, `${m.place} · ${m.date}`)),
       this.clockEl,
       h('div', { class: 'hud-speed' }, this.pauseBtn, ...this.speedBtns),
+      m.controlsHelp ? h('button', { class: 'chip', title: 'How this board works (H)', onclick: () => this.help() }, '?') : null,
       h('button', { class: 'chip', onclick: () => this.quit() }, 'Leave'));
+    this.onKey = (e) => {
+      if (e.target.closest?.('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key === ' ' && !e.target.closest?.('svg')) { e.preventDefault(); this.setPaused(!this.paused); }
+      const n = +e.key, sp = m.speeds ?? [1, 2, 5, 10];
+      if (n >= 1 && n <= sp.length) this.setSpeed(sp[n - 1]);
+      if (e.key === 'h' || e.key === 'H') this.help();
+    };
+    window.addEventListener('keydown', this.onKey);
     const side = h('aside', { class: 'side' },
       this.sandbox ? null : h('section', { class: 'obj' }, h('h3', {}, 'Objectives'), this.objList),
       h('section', { class: 'comms' }, h('h3', {}, 'Control room'), this.logEl, this.choiceEl));
@@ -68,6 +77,8 @@ export class Runner {
   setPaused(p) { this.paused = p; this.pauseBtn.textContent = p ? '▶' : '❚❚'; this.pauseBtn.classList.toggle('on', p); }
   /** Lower the speed to at most s (used by the script when something happens). */
   slow(s = 1) { if (this.speed > s) this.setSpeed(s); }
+
+  help() { if (this.mission.controlsHelp) this.say('okafor', this.mission.controlsHelp + ' <span class="muted">Keys: space pauses, 1–' + (this.mission.speeds ?? [1, 2, 5, 10]).length + ' set the speed.</span>'); }
 
   /** Add a line to the control-room log. who: a key of people, or a { name, tag, color } object. */
   say(who, text, cls = '') {
@@ -137,6 +148,7 @@ export class Runner {
     if (this.ended) return;
     this.ended = true;
     cancelAnimationFrame(this.raf);
+    window.removeEventListener('keydown', this.onKey);
     audio.horn(false);
     this.panel.destroy?.();
     const r = { ...result, ...(this.mission.score?.(this.model, this, result) ?? {}) };
@@ -144,7 +156,7 @@ export class Runner {
   }
 
   quit() {
-    if (this.sandbox || confirm('Leave this mission? Progress in it will be lost.')) { this.ended = true; cancelAnimationFrame(this.raf); audio.horn(false); this.panel.destroy?.(); this.onEnd?.(null, this); }
+    if (this.sandbox || confirm('Leave this mission? Progress in it will be lost.')) { this.ended = true; cancelAnimationFrame(this.raf); window.removeEventListener('keydown', this.onKey); audio.horn(false); this.panel.destroy?.(); this.onEnd?.(null, this); }
   }
 }
 

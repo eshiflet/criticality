@@ -100,7 +100,7 @@ a { color: var(--accent); }
 .choice-q { font-size: 13.5px; line-height: 1.45; color: #ffd98a; }
 .choice-b { text-align: left; border: 1px solid var(--accent); background: rgba(232, 180, 74, 0.08); border-radius: 6px; padding: 7px 10px; cursor: pointer; font-size: 13.5px; }
 .choice-b:hover { background: rgba(232, 180, 74, 0.2); }
-@media (max-width: 980px) { .mission { grid-template-columns: 1fr; } .side { position: static; max-height: none; } .log { max-height: 40vh; } }
+@media (max-width: 980px) { .mission { grid-template-columns: 1fr; } .side { position: static; max-height: none; order: -1; } .log { max-height: 28vh; min-height: 90px; } .hud-clock { margin-left: 0; } }
 
 /* ---------- panels and widgets (themed below) ---------- */
 .panel { --board: #3a4048; --board2: #30353c; --face: #f2efe4; --ink: #151515; --needle: #111; --bezel: #222; --plate: #f0efe8; --plate-ink: #111; --dig-bg: #1b0b08; --dig-fg: #ff5a3c; --tick: #151515; --set: #d03b00;
@@ -138,7 +138,8 @@ a { color: var(--accent); }
 .lamp.flash.on { animation: blink 0.7s steps(2) infinite; }
 /* annunciators */
 .annunciators { align-items: stretch; width: 100%; }
-.ann-grid { display: grid; gap: 3px; width: 100%; }
+.ann-grid { display: grid; gap: 3px; width: 100%; grid-template-columns: repeat(var(--cols, 6), minmax(0, 1fr)); }
+@media (max-width: 700px) { .ann-grid { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); } }
 .ann { display: grid; place-items: center; text-align: center; min-height: 34px; padding: 2px 3px; font: 700 8.5px 'IBM Plex Sans', sans-serif; letter-spacing: 0.03em; line-height: 1.15; text-transform: uppercase; background: #e7e3d7; color: #8d897d; border: 1px solid #111; border-radius: 2px; white-space: pre-line; }
 .ann.lit, .ann.flash { color: #1a1300; }
 .ann.alarm.lit, .ann.alarm.flash { background: #fff1a8; box-shadow: 0 0 10px rgba(255, 220, 90, 0.6); }

@@ -102,7 +102,7 @@ export function lamp({ label, color = 'red', small = false }) {
 export function annunciators(defs, { cols = 6, onHorn } = {}) {
   const state = new Map(defs.map(([k]) => [k, 'off'])); // off | flash | lit | clear
   const tiles = new Map();
-  const grid = h('div', { class: 'ann-grid', style: { gridTemplateColumns: `repeat(${cols}, 1fr)` } });
+  const grid = h('div', { class: 'ann-grid', style: { '--cols': cols } });
   defs.forEach(([k, text, kind = 'alarm']) => { const t = h('div', { class: `ann ${kind}` }, text); tiles.set(k, t); grid.append(t); });
   const ack = h('button', { class: 'pb small', onclick: () => { state.forEach((s, k) => { if (s === 'flash') state.set(k, 'lit'); }); paint(); onHorn?.(false); } }, 'ACK');
   const reset = h('button', { class: 'pb small', onclick: () => { state.forEach((s, k) => { if (s === 'clear') state.set(k, 'off'); }); paint(); } }, 'RESET');

@@ -76,6 +76,12 @@ export const rbmk = {
       else if (ch === 'az5') { m.pressAZ5('az5'); g.say('okafor', 'You pressed AZ-5. Watch the first three seconds.'); }
       else { g.flags.manualSave = true; m.ctl.autoMode = 'MAN'; g.say('okafor', 'Hold the RR lever IN. Bring the margin up above 30 before you let the emergency rods move.'); }
     } },
+    { when: (m, g) => !g.flags.raised && !g.flags.refused && m.t > 7700 && m.MW >= 650 && m.az5 === null, do: (m, g) => {
+      g.slow(1);
+      g.say('dce', 'Begin the test.');
+      g.say('okafor', `You kept it inside the programme: ${m.MW.toFixed(0)} MW. Get a SKALA printout before you trust the margin. If it\'s 15 rods or more, you may start the test: block the turbine trip signal (so the reactor isn\'t scrammed by it), lift the guard on the TG-8 button and press it. When the rundown is done, shut the reactor down with AZ-5.`);
+    } },
+    { when: (m, g) => g.flags.testDone && m.az5 === null && !m.destroyed, do: (m, g) => g.say('okafor', 'Test done. Shut the reactor down: AZ-5.') },
     { when: (m, g) => g.flags.testStarted && g.t - g.flags.testStarted > 36 && m.az5 === null && !m.destroyed && m.MW < 2000 && m.orm < 15, do: (m, g) => { g.say('sf', 'Power is rising. Press AZ-5!'); } },
     { when: (m) => m.destroyed, do: (m, g) => { g.say('log', '01:23:44. Power off the scale. The rods have stopped. Two explosions.', 'bad'); } },
   ],
