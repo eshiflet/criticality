@@ -236,3 +236,9 @@ a { color: var(--accent); }
 .backpanel summary { cursor: pointer; font: 600 12px 'IBM Plex Sans'; color: #ffb35c; }
 .printer { background: #f3f1e8; color: #222; font: 12px/1.35 'IBM Plex Mono', monospace; padding: 8px 10px; border-radius: 3px; margin: 6px 0 0; min-width: 220px; white-space: pre; }
 .theme-tmi .s-pos, .theme-tmi .strip-key { fill: #ddd; color: #ddd; }
+
+/* RBMK */
+.rbmk-field { border-radius: 50%; border: 4px solid #39414a; background: #e9ece9; }
+.rbmk-carto { border: 4px solid #39414a; border-radius: 6px; }
+.note-card.small { font-size: 10.5px; padding: 3px 6px; }
+.theme-rbmk .pb.big { font-family: 'IBM Plex Mono'; font-size: 18px; }
