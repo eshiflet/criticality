@@ -1,0 +1,12 @@
+import { SubModel } from '../js/models/sub.js';
+const m = new SubModel({ power: 0.15 });
+const show = (l) => console.log(l.padEnd(16), 't', m.t.toFixed(0), 'P', (m.frac*100).toFixed(1), 'Tavg', m.Tavg.toFixed(1), 'Thot', m.Thot.toFixed(1), 'Ps', m.steamPsig.toFixed(0), 'rod', m.rodIn.toFixed(1), 'kts', m.speed.toFixed(1), 'batt', m.battery.toFixed(0), 'scram', m.why, [...m.alarms].join());
+m.ctl.ahead = 0.11; for (let i = 0; i < 300; i++) m.step(1); show('steady 1/3');
+m.ctl.ahead = 0.95; for (let i = 0; i < 120; i++) m.step(1); show('flank 2 min');
+m.ctl.ahead = 0.0; for (let i = 0; i < 60; i++) m.step(1); show('stop');
+m.ctl.ahead = 0.3; for (let i = 0; i < 120; i++) m.step(1); show('std');
+m.scram('test'); m.ctl.epm = true; m.ctl.ahead = 0; for (let i = 0; i < 60; i++) m.step(1); show('scram +60');
+m.ctl.ahead = 0; m.resetScram(); show('reset');
+let t = 0; while (m.frac < 0.05 && t < 900) { m.ctl.rodCmd = m.sur < 0.7 && m.frac < 0.03 ? 1 : 0; m.step(0.2); t += 0.2; } m.ctl.rodCmd = 0; show('recovered');
+for (let i = 0; i < 120; i++) m.step(1); show('settle');
+m.ctl.epm = false; for (let i = 0; i < 200; i++) { m.ctl.ahead = Math.min(0.3, i * 0.004); m.step(1); } show('std again');
