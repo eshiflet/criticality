@@ -242,3 +242,7 @@ a { color: var(--accent); }
 .rbmk-carto { border: 4px solid #39414a; border-radius: 6px; }
 .note-card.small { font-size: 10.5px; padding: 3px 6px; }
 .theme-rbmk .pb.big { font-family: 'IBM Plex Mono'; font-size: 18px; }
+
+/* Sequoyah */
+.bank-grid { display: grid; grid-template-columns: repeat(4, auto); gap: 6px 10px; }
+.firstout { font: 700 12px 'IBM Plex Mono'; color: #b81d1d; letter-spacing: 0.05em; margin-top: 4px; min-height: 16px; }

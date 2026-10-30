@@ -4,5 +4,6 @@ import { sub } from './sub.js';
 import { bwr } from './bwr.js';
 import { tmi } from './tmi.js';
 import { rbmk } from './rbmk.js';
+import { seq } from './seq.js';
 
-export const MISSIONS = [cp1, sub, bwr, tmi, rbmk];
+export const MISSIONS = [cp1, sub, bwr, tmi, rbmk, seq];
