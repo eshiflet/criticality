@@ -160,6 +160,18 @@ export class TMIModel {
     const qIn = (core * S.MWt + pumpHeat) * BTU_PER_MW;
     const qOut = (qSg[0] + qSg[1]) * BTU_PER_MW + (wPorv + wSafety) * 1000 * (water ? 0 : hfg(this.P + PSIA)) + wHpi * 1000 * Math.max(0, this.T - 90) * 1.05;
     this.T = Math.max(90, this.T + (h * (qIn - qOut)) / S.C);
+    // A solid system can't hold more water: the excess goes out through the PORV (if the block
+    // valve is open) or the code safeties, at whatever pressure that takes.
+    const Vmax = S.Vloop + S.Vpzr;
+    if ((this.M * 1000) / rhoL(this.T) > Vmax) {
+      const excess = this.M - (Vmax * rhoL(this.T)) / 1000;
+      this.M -= excess;
+      this.solidRelief = excess / h; // klb/s
+      if (!flowing) this.P = Math.max(this.P, S.codeSafety + 5);
+      else this.P = Math.max(this.P, 2300);
+      if (this.rupture) this.sump += (excess * 1000) / 8.3 / 100;
+      else this.rcdtP = Math.min(260, this.rcdtP + excess * 40);
+    } else this.solidRelief = 0;
     // Volumes: what the water doesn't fill is steam.
     const Vw = (this.M * 1000) / rhoL(this.T);
     const Vs = S.Vloop + S.Vpzr - Vw;
@@ -188,7 +200,7 @@ export class TMIModel {
     // Where the PORV discharges: tailpipe and the reactor coolant drain tank (rupture disk ~192 psig).
     this.tailpipe = lag(this.tailpipe, flowing ? Math.min(290, tsat(this.rcdtP + PSIA) + 20) : 200, 30, h);
     if (!this.rupture) {
-      this.rcdtP = clamp(this.rcdtP + h * (wPorv * 1000 * (water ? 0.08 : 0.25) - 0.02 * this.rcdtP), 0, 260);
+      this.rcdtP = clamp(this.rcdtP + h * (wPorv * 1000 * (water ? 0.0045 : 0.011) - 0.0005 * this.rcdtP), 0, 260); // the rupture disk went at about 4:15
       this.rcdtT = lag(this.rcdtT, flowing ? tsat(this.rcdtP + PSIA) : 110, 60, h);
       if (this.rcdtP > 192) { this.rupture = true; this.events.push({ type: 'rupture' }); }
     } else {

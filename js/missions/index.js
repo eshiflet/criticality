@@ -2,5 +2,6 @@
 import { cp1 } from './cp1.js';
 import { sub } from './sub.js';
 import { bwr } from './bwr.js';
+import { tmi } from './tmi.js';
 
-export const MISSIONS = [cp1, sub, bwr];
+export const MISSIONS = [cp1, sub, bwr, tmi];
