@@ -7,6 +7,7 @@ import { SubModel } from '../js/models/sub.js';
 import { BWRModel } from '../js/models/bwr.js';
 import { TMIModel } from '../js/models/tmi.js';
 import { RBMKModel } from '../js/models/rbmk.js';
+import { AP1000Model, AP, PT } from '../js/models/ap1000.js';
 
 let failed = 0;
 const check = (name, ok, detail = '') => { console.log(`${ok ? 'ok  ' : 'FAIL'}  ${name}${detail ? `  (${detail})` : ''}`); if (!ok) failed++; };
@@ -91,6 +92,50 @@ const run = (m, sec, dt, f) => { for (let i = 0; i < sec / dt; i++) { f?.(m); m.
   for (let k = 0; k < 11; k++) { safe.ctl.setMW = 1600 - (800 * (k + 1)) / 11; go(safe, 300, op); }
   go(safe, 1200, op); safe.ctl.tripBlocked = true; safe.startTest(); go(safe, 45, op); safe.pressAZ5(); go(safe, 40);
   check('RBMK: test at 800 MW with margin → intact', !safe.destroyed && safe.MW < 50, `peak ${safe.peakMW.toFixed(0)} MW`);
+}
+
+
+// AP1000 (Vogtle 3): a cold heat-up inside the P–T limits; first criticality above the predicted
+// boron; a positive temperature coefficient at zero power; the hunting feedwater valve trips the
+// plant in AUTO but not in MANUAL; after a trip with no feedwater, passive RHR cools it.
+{
+  const m = new AP1000Model({ offset: 35 }), P = m.plant, c = P.ctl;
+  for (let i = 0; i < 4; i++) P.setPump(i, true);
+  run(m, 600, 0.5); c.rns = false;
+  let ptOk = true, maxRate = 0;
+  while (P.Tavg < 556 && m.t < 12 * 3600) run(m, 60, 0.5, () => { c.pzrSet = Math.min(2235, Math.max(c.pzrSet, Math.ceil((PT.min(P.Tavg) + 150) / 25) * 25)); if (P.Ppzr > PT.max(P.Tavg) + 5 || P.Ppzr < PT.min(P.Tavg) - 5) ptOk = false; if (m.t > 1800) maxRate = Math.max(maxRate, P.heatupRate); });
+  c.pzrSet = 2235; run(m, 1200, 0.5);
+  check('AP1000 heat-up to hot standby inside P–T limits, ≤100 °F/h', ptOk && P.Tavg > 555 && maxRate <= 100, `${P.Tavg.toFixed(0)} °F, ${P.Ppzr.toFixed(0)} psig, peak ${maxRate.toFixed(0)} °F/h, ${(m.t / 3600).toFixed(1)} h`);
+  m.sdDemand = true; run(m, 1500, 0.5);
+  while (m.ctlSteps < AP.dilutionSteps) { c.lever = 1; m.step(0.5); } c.lever = 0;
+  c.makeup = 'dilute'; c.gpm = 150;
+  while (m.k.rho < 0 && m.t < 30 * 3600) { if (m.k.rho > -0.004) c.gpm = 15; run(m, 10, 0.5, () => { if (P.P6) c.srBlock = true; }); }
+  c.makeup = 'off';
+  const blk = () => { if (P.P6) c.srBlock = true; if (P.P10) c.prBlock = true; };
+  check('AP1000 critical above the predicted boron', P.boron > AP.predictedCB + 10, `${P.boron.toFixed(0)} ppm vs ${AP.predictedCB}`);
+  run(m, 300, 0.5, blk);
+  const r0 = m.k.rho, T0 = P.Tavg; c.dumpSet = 1060; run(m, 300, 0.5, blk);
+  const itc = ((m.k.rho - r0) * 1e5) / (P.Tavg - T0);
+  check('AP1000 ITC positive at zero power', itc > 0 && itc < 3, `${itc.toFixed(2)} pcm/°F`);
+  c.dumpSet = 1092;
+  run(m, 1800, 0.5, () => { blk(); c.lever = m.frac < 0.03 && P.sur < 0.5 ? 1 : 0; });
+  P.latchTurbine(); c.loadSet = 26; c.loadRate = 3;
+  run(m, 1500, 0.5, () => { if (P.P10) c.prBlock = true; if (P.C5) { c.lever = 0; c.rodMode = 'auto'; } else c.lever = P.Tavg < P.Tref - 1.5 ? 1 : 0; c.makeup = m.banks[3] > 175 ? 'dilute' : 'off'; c.gpm = 40; });
+  c.makeup = 'off';
+  check('AP1000 steady at 25% on auto rods', Math.abs(m.frac - 0.26) < 0.03 && !P.trip.latched, `${(m.frac * 100).toFixed(1)}%, Tavg ${P.Tavg.toFixed(1)} vs ${P.Tref.toFixed(1)}`);
+  // Manual: the operator matches feed to steam.
+  const sg = { min: 100, max: 0 };
+  P.startFwFault(); c.fwMode = 'man';
+  run(m, 600, 0.5, () => { c.fwDemand = Math.round(100 * (P.steamFrac + 0.01 * (50 - P.sgInv))); sg.min = Math.min(sg.min, P.sgInv); sg.max = Math.max(sg.max, P.sgInv); });
+  check('AP1000 hunting FW valve: manual control holds SG level', !P.trip.latched && sg.min > 35 && sg.max < 65, `${sg.min.toFixed(0)}–${sg.max.toFixed(0)}%`);
+  // Back to AUTO: it trips the plant.
+  c.fwMode = 'auto'; P.fwValve += 0.1; let tTrip = null;
+  run(m, 900, 0.5, () => { if (P.trip.latched && tTrip === null) tTrip = m.t; });
+  check('AP1000 hunting FW valve in AUTO trips the reactor', P.trip.latched && (P.trip.firstOut === 'sgHigh' || P.trip.firstOut === 'sgLow'), `${P.trip.firstOut}`);
+  P.sufwFailed = true;
+  let t530 = null; const t0 = m.t;
+  run(m, 3 * 3600, 0.5, () => { if (t530 === null && P.prhr && P.Tavg < 530) t530 = m.t; });
+  check('AP1000 passive RHR cools the plant below 530 °F', t530 !== null && P.Ppzr < 2485, `${t530 ? ((t530 - t0) / 60).toFixed(0) : '—'} min after the trip, IRWST ${P.Tirwst.toFixed(0)} °F`);
 }
 
 console.log(failed ? `\n${failed} check(s) failed` : '\nall checks passed');

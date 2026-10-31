@@ -1,6 +1,6 @@
 # CRITICALITY — design notes
 
-A browser game: six real reactors, six control rooms, one operator's career.
+A browser game: seven reactors, seven control rooms, one operator's career.
 Plain ES modules, no build step. Serve the folder (`python3 -m http.server`) and open
 `index.html`. Headless model tests run with `node tests/run.mjs`.
 
@@ -63,6 +63,13 @@ a free-play **Sandbox** once its mission is passed.
    exam: from hot standby, start up, block the source-range trip at P-6, go to the
    point of adding heat, latch the turbine, load to 100% with rods in AUTO and boron
    dilution, then ride out a load rejection. Uses everything learned.
+
+7. **Vogtle Unit 3, March 2023 — "First of a Kind".** Westinghouse AP1000, the first US
+   startup of the design. From Mode 5 (180 °F): start the canned RCPs, isolate RNS, heat up on
+   pump heat inside the P–T limits, withdraw shutdown banks, dilute a fresh core to first
+   criticality (it comes in above the predicted boron; plot 1/M), measure the ITC (positive),
+   decide what to do about it, go on line and load to 25%. Then the feedwater regulating valve
+   hunts: catch it in manual, or trip and let passive RHR cool the plant without interfering.
 
 ## Models (js/models)
 

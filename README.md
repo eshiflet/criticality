@@ -1,7 +1,7 @@
 # Criticality
 
-A browser game about six real reactor control rooms, from Chicago Pile-1 in 1942 to a
-Westinghouse plant running today. Each mission puts you in the operator's seat for a night that
+A browser game about seven reactor control rooms, from Chicago Pile-1 in 1942 to the first
+startup of an AP1000 in 2023. Each mission puts you in the operator's seat for a night that
 mattered. The plant models are built from public sources and are physically based; the events
 follow the historical record. The submarine and its patrol are fictional.
 
@@ -13,6 +13,12 @@ follow the historical record. The submarine and its patrol are fictional.
 | 4 | **Stuck Open** | Three Mile Island 2 (B&W PWR) | 28 Mar 1979 | see through the PORV lamp and the rising pressurizer level |
 | 5 | **The Test** | Chernobyl 4 (RBMK-1000) | 25–26 Apr 1986 | hold the reactivity margin — or refuse the test |
 | 6 | **Certification** | Sequoyah 1 (Westinghouse 4-loop), TVA | today | full startup to 100%, then ride out a turbine trip |
+| 7 | **First of a Kind** | Vogtle 3 (Westinghouse AP1000), Georgia Power | Mar 2023 | heat up from cold, dilute a fresh core to first criticality, measure the coefficient, load to 25% |
+
+Every control room has a live **plant mimic** at the top: a schematic of that reactor's own
+architecture (CP-1's pile section, the submarine's shaft and screw, the BWR's Mark I torus, TMI's
+candy-cane loops, the RBMK's drum separators, the AP1000's passive safety tanks), with moving
+fluid, turning pumps, valves that show red for open and green for shut, and live values.
 
 Passing a mission (grade C or better) unlocks the next and a free-play **sandbox** for that
 reactor. Progress is saved in the browser.
@@ -54,6 +60,12 @@ node tests/run.mjs
   - `sequoyah.js` + `w-plant.js` — Westinghouse four-loop: eight rod banks with overlap, boron,
     Tavg program, steam dumps, P-6/P-7/P-10/C-5 interlocks, full reactor protection (ported from
     the m-builder project).
+  - `ap1000.js` — AP1000 on the same plant model: a cold heat-up on pump heat with RNS and
+    pressure–temperature limits, a fresh core (no xenon or decay heat), M banks plus shutdown banks,
+    a moderator coefficient that is positive at hot zero power and falls with temperature, steam
+    generator inventory with a feedwater regulating valve, and passive RHR into the IRWST.
+- `js/ui/mimic.js`, `js/ui/mimics.js` — the plant mimics: an SVG toolkit (levels, flow, pumps,
+  valves, rods) and one schematic per reactor.
 - `js/ui/widgets.js` — gauges (linear/log), edgewise meters, LED/Nixie/VFD readouts, lamps,
   annunciator windows with flash/ACK/RESET and a horn, selector switches, guarded pushbuttons,
   spring-return levers, setpoint knobs, J-handle toggles, strip-chart recorders, bars.
@@ -82,6 +94,10 @@ with invented lines (CP-1's two quotations from Fermi are the famous recorded on
   scroll at 375 px in any control room), rank promotions, Chernobyl branch for players who keep
   the reactor inside the test programme.
 
+- 2026-10-30 (day): plant mimics in every control room; seventh mission, the AP1000 first
+  startup at Vogtle 3, with headless checks for its heat-up, criticality, coefficient, feedwater
+  fault and passive RHR.
+
 ### Ideas for next
 
 - Rod-by-rod control where the real boards had it (the BWR rod select matrix, RBMK rod groups,
@@ -89,5 +105,4 @@ with invented lines (CP-1's two quotations from Fermi are the famous recorded on
 - A post-mission replay chart (power, pressure, level against time) in the debrief.
 - More sandbox scenarios per plant (e.g. a Sequoyah steam-generator tube rupture, a BWR ATWS).
 - Volume control and a "no horn" option.
-- Publish: create the GitHub repo (eshiflet) when ready.
 

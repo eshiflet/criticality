@@ -19,8 +19,8 @@ const rank = () => RANKS[MISSIONS.filter((m) => passed(m.id)).length] ?? RANKS.a
 function title() {
   document.body.className = 'screen-title';
   app.replaceChildren(h('div', { class: 'title' },
-    h('div', { class: 'title-mark' }, h('span', { class: 'atom' }, '⚛'), h('h1', {}, 'CRITICALITY'), h('p', { class: 'sub' }, 'Six control rooms. Six nights that mattered.')),
-    h('p', { class: 'title-blurb' }, 'From a squash court in Chicago to a submarine under the ice, from a cable fire in Alabama to the night in Pripyat: sit at the controls of six real reactors, rebuilt in the Archive, and live through what happened in them.'),
+    h('div', { class: 'title-mark' }, h('span', { class: 'atom' }, '⚛'), h('h1', {}, 'CRITICALITY'), h('p', { class: 'sub' }, 'Seven control rooms. Seven nights that mattered.')),
+    h('p', { class: 'title-blurb' }, 'From a squash court in Chicago to a submarine under the ice, from a cable fire in Alabama to the night in Pripyat and the first startup of America\'s newest reactor design: sit at the controls of seven real reactors, rebuilt in the Archive, and live through what happened in them.'),
     h('div', { class: 'title-btns' },
       h('button', { class: 'big-btn', onclick: () => { audio.beep(660, 0.1); campaign(); } }, Object.keys(state.done).length ? 'Continue' : 'Begin'),
       h('label', { class: 'toggle-line' }, h('input', { type: 'checkbox', checked: audio.sound.enabled, onchange: (e) => { audio.sound.enabled = e.target.checked; } }), ' Sound')),
@@ -59,7 +59,8 @@ function campaignNote() {
     "Next is Browns Ferry, 1975. Biggest reactor in the world when it was built. Then a man with a candle went looking for an air leak.",
     "Three Mile Island. I want you to remember one thing going in: the instruments tell the truth, but not always the truth you think you're reading.",
     "Chernobyl. I'll be honest: I almost didn't build this room. Sit down. Read the briefing twice.",
-    "Last one. Sequoyah, a plant that runs today. This is your certification. Everything you've learned, on one board.",
+    "Sequoyah, a plant that runs today. This is your certification. Everything you've learned, on one board.",
+    'Licensed. One more room, and it\'s the newest in the building: the first startup of an AP1000. Nobody has a history to replay there. Just predictions.',
     'You\'ve sat in every chair in the building. Some days I think the Archive exists for the ones who did it for real. Thank you for taking it seriously.',
   ][n];
 }
