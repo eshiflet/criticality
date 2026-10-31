@@ -5,6 +5,7 @@
 
 import { h, gauge, digital, lamp, button, lever, knob, stripChart, section, toggle } from '../widgets.js';
 import * as audio from '../audio.js';
+import { cp1Mimic } from '../mimics.js';
 
 export function buildCP1(root, m, g) {
   const c = m.ctl;
@@ -49,7 +50,9 @@ export function buildCP1(root, m, g) {
   const predict = h('div', { class: 'note-card' }, 'Need two readings to extrapolate.');
   const flash = h('div', { class: 'cp1-flash' });
 
+  const mim = cp1Mimic(m);
   root.append(
+    mim.el,
     h('div', { class: 'row' },
       section('Neutron counters', scaler.el, rate.el, galvo.el),
       section('Recorder', recorder.el, range.el),
@@ -90,6 +93,7 @@ export function buildCP1(root, m, g) {
 
   return {
     update(dtReal, paused) {
+      mim.update(paused);
       if (held && !paused) c.control = Math.max(0, Math.min(m.spec.rodLength, c.control + held * dtReal * 0.5));
       const n = m.counts - lastCounts; lastCounts = m.counts;
       if (!paused && g.speed <= 2) audio.clicks(n, dtReal);

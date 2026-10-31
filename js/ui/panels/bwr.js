@@ -4,6 +4,7 @@
 
 import { h, gauge, edgewise, digital, lamp, button, knob, selector, annunciators, section, toggle } from '../widgets.js';
 import * as audio from '../audio.js';
+import { bwrMimic } from '../mimics.js';
 
 const gpm = (klbs) => (klbs * 1000 * 60) / 8.3;
 
@@ -64,7 +65,9 @@ export function buildBWR(root, m, g) {
 
   const deadable = [['hpci', hpci.el], ['rcic', rcic.el], ['cs0', csA.el], ['cs1', csB.el], ['lp0', lpA.el], ['lp1', lpB.el], ['msivCtl', msiv.el], ['rec0', pumpA.el], ['rec1', pumpB.el], ['feed', fwAuto.el], ...srvs.map((t, i) => [`srv${i}`, t.el])];
 
+  const mim = bwrMimic(m);
   root.append(
+    mim.el,
     h('div', { class: 'row' }, section('Annunciators', ann.el)),
     h('div', { class: 'row' },
       section('Reactor', aprm.el, core, h('div', { class: 'sub-col' }, mode.el, h('div', { class: 'cp1-steps' }, scramA.el, scramB.el), reset.el)),
@@ -92,7 +95,8 @@ export function buildBWR(root, m, g) {
   }
 
   return {
-    update() {
+    update(dtReal, paused) {
+      mim.update(paused);
       const active = new Set(m.alarms);
       if (m.scrammed) active.add('scram');
       if (g.flags.fire) active.add('fire');

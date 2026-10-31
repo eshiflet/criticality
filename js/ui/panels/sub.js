@@ -3,6 +3,7 @@
 
 import { h, gauge, edgewise, digital, lamp, button, lever, knob, selector, annunciators, section, toggle, bar } from '../widgets.js';
 import * as audio from '../audio.js';
+import { subMimic } from '../mimics.js';
 import { BELLS } from '../../models/sub.js';
 
 export function buildSub(root, m, g) {
@@ -43,7 +44,9 @@ export function buildSub(root, m, g) {
   const noise = bar({ label: 'Self-noise', min: 0, max: 1.2, digits: 2, color: '#e05a3a' });
   const red = toggle({ label: 'Rig for red', off: 'WHITE', on: 'RED', value: false, lamps: false, onChange: (v) => root.classList.toggle('rig-red', v) });
 
+  const mim = subMimic(m);
   root.append(
+    mim.el,
     h('div', { class: 'row' }, section('Annunciators', ann.el)),
     h('div', { class: 'row' },
       section('Reactor plant control panel', pwr.el, sur.el, h('div', { class: 'sub-col' }, range.el, rodPos.el), tavg.el, thot.el, tcold.el, shim.el, pumps.el, h('div', { class: 'sub-col' }, scram.el, reset.el))),
@@ -53,7 +56,8 @@ export function buildSub(root, m, g) {
 
   const angle = (i) => -90 + (180 * i) / (BELLS.length - 1);
   return {
-    update() {
+    update(dtReal, paused) {
+      mim.update(paused);
       const active = new Set(m.alarms);
       if (m.scrammed) active.add('scram');
       if (c.epm) active.add('epm');

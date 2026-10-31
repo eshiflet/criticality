@@ -5,6 +5,7 @@
 
 import { h, gauge, edgewise, digital, lamp, button, knob, selector, annunciators, section, toggle, stripChart } from '../widgets.js';
 import * as audio from '../audio.js';
+import { tmiMimic } from '../mimics.js';
 import { psat, PSIA } from '../../engine/physics.js';
 
 const gpm = (klbs) => (klbs * 1000 * 60) / 8.3;
@@ -58,7 +59,9 @@ export function buildTMI(root, m, g) {
   const back = h('details', { class: 'backpanel' }, h('summary', {}, 'Walk around to the back panels (recorders, computer printout)'), h('div', { class: 'row' }, section('Back panel recorder', tail.el), section('Plant computer · incore thermocouples', incore)));
   const steam = h('details', { class: 'backpanel' }, h('summary', {}, 'Steam tables (the printed card on the desk)'), h('pre', { class: 'printer', html: steamCard() }));
 
+  const mim = tmiMimic(m);
   root.append(
+    mim.el,
     h('div', { class: 'row' }, section('Annunciators', ann.el)),
     h('div', { class: 'row' },
       section('Reactor coolant system', pr.el, thA.el, thB.el, tc.el, pzr.el, h('div', { class: 'sub-col' }, porvLamp.el, porvSel.el), block.el, heaters.el),
@@ -71,7 +74,8 @@ export function buildTMI(root, m, g) {
 
   let printT = 0;
   return {
-    update(dtReal) {
+    update(dtReal, paused) {
+      mim.update(paused);
       const active = new Set(m.alarms);
       if (m.scrammed) active.add('rx');
       if (!c.turbine) active.add('turb');

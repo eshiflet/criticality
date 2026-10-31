@@ -3,6 +3,7 @@
 
 import { h, gauge, edgewise, digital, lamp, button, lever, knob, selector, annunciators, section, toggle } from '../widgets.js';
 import * as audio from '../audio.js';
+import { seqMimic } from '../mimics.js';
 import { TRIPS } from '../../models/sequoyah.js';
 
 export function buildSeq(root, m, g) {
@@ -47,7 +48,9 @@ export function buildSeq(root, m, g) {
   const rtrip = button({ label: 'Reactor trip', color: 'red', big: true, guarded: true, onPress: () => { P.tripReactor('manual'); audio.thunk(); } });
   const reset = button({ label: 'Trip reset', color: 'white', onPress: () => { const e = P.resetTrip(); if (e) g.say('log', e); } });
 
+  const mim = seqMimic(m);
   root.append(
+    mim.el,
     h('div', { class: 'row' }, section('Annunciators', ann.el, firstOut)),
     h('div', { class: 'row' },
       section('Nuclear instrumentation', sr.el, ir.el, pr.el, sur.el, h('div', { class: 'sub-col' }, srBlk.el, prBlk.el)),
@@ -60,7 +63,8 @@ export function buildSeq(root, m, g) {
       section('Reactor protection', rtrip.el, reset.el)));
 
   return {
-    update() {
+    update(dtReal, paused) {
+      mim.update(paused);
       const active = new Set(P.signals);
       if (P.trip.latched) active.add('rx');
       if (!c.latched) active.add('turb');

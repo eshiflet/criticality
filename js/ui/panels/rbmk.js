@@ -5,6 +5,7 @@
 
 import { h, gauge, edgewise, digital, button, lever, knob, selector, annunciators, section, toggle, stripChart } from '../widgets.js';
 import * as audio from '../audio.js';
+import { rbmkMimic } from '../mimics.js';
 
 export function buildRBMK(root, m, g) {
   const c = m.ctl, S = m.spec;
@@ -42,7 +43,9 @@ export function buildRBMK(root, m, g) {
   const block = toggle({ label: 'TG trip signal → AZ-5', off: 'BLOCK', on: 'ARMED', value: !c.tripBlocked, onChange: (v) => { c.tripBlocked = !v; } });
   const eccs = toggle({ label: 'ECCS', off: 'DISC', on: 'READY', value: c.eccs, onChange: (v) => { c.eccs = v; } });
 
+  const mim = rbmkMimic(m);
   root.append(
+    mim.el,
     h('div', { class: 'row' }, section('Annunciators', ann.el)),
     h('div', { class: 'row' },
       section('Rod position indicators · 211 rods', field),
@@ -91,7 +94,8 @@ export function buildRBMK(root, m, g) {
   const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
   let frameN = 0;
   return {
-    update() {
+    update(dtReal, paused) {
+      mim.update(paused);
       const f = g.flags;
       if (f.printing && g.t - f.printing > 180) { f.printing = null; m.ormPrinted = m.orm; m.ormAge = 0; f.printedAt = g.clock; g.say('log', `SKALA printout: operating reactivity margin <b>${m.orm.toFixed(0)} rods</b>.`, m.orm < S.ormLimit ? 'bad' : ''); }
       const active = new Set(m.alarms);
